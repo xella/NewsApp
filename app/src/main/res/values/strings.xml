@@ -19,4 +19,7 @@
 
     <string name="settings_order_by_relevance_label">Relevance</string>
     <string name="settings_order_by_relevance_value" translatable="false">relevance</string>
+
+    <string name="no_data">No data found.</string>
+    <string name="no_internet">No internet connection.</string>
 </resources>

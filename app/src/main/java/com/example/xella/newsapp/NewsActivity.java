@@ -17,6 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +34,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private NewsAdapter mNewsAdapter;
     private ListView mNewsListView;
+    private TextView mEmptyStateTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,13 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         final ArrayList<News> newsResult = new ArrayList<>();
 
         mNewsListView = (ListView) findViewById(R.id.news_list);
+
+        mEmptyStateTextView = (TextView) findViewById(R.id.empty_text_view);
+        mNewsListView.setEmptyView(mEmptyStateTextView);
+
+        mEmptyStateTextView.setVisibility(View.VISIBLE);
+        mEmptyStateTextView.setText(R.string.no_data);
+
         // Set up the adapter for the ListView
         mNewsAdapter = new NewsAdapter(NewsActivity.this, newsResult);
         mNewsListView.setAdapter(mNewsAdapter);
@@ -47,6 +58,9 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         if (isConnected()) {
             LoaderManager loaderManager = getLoaderManager();
             loaderManager.initLoader(NEWS_LOADER_ID, null, this);
+        } else {
+            mEmptyStateTextView.setVisibility(View.VISIBLE);
+            mEmptyStateTextView.setText(R.string.no_internet);
         }
 
         // Set an item click listener on the ListView, which sends an intent to a web browser
@@ -72,7 +86,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
     // Create an instance of a Loader if there is no previous one
     @Override
     public Loader<List<News>> onCreateLoader(int id, Bundle args) {
-
+        mEmptyStateTextView.setVisibility(View.GONE);
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         String orderBy = sharedPrefs.getString(
                 getString(R.string.settings_order_by_key),
