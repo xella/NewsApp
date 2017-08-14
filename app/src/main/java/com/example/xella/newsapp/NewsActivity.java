@@ -4,11 +4,16 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -18,7 +23,7 @@ import java.util.List;
 
 public class NewsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<News>> {
 
-    private static final String GUARDIAN_URL = "http://content.guardianapis.com/search?q=debate&tag=politics/politics&from-date=2014-01-01&show-fields=all&api-key=test";
+    private static final String GUARDIAN_URL = "http://content.guardianapis.com/search?api-key=test&show-fields=headline%2Cbyline%2CtrailText&page-size=20&q=learning";
 
     private static final int NEWS_LOADER_ID = 1;
 
@@ -34,7 +39,7 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
 
         final ArrayList<News> newsResult = new ArrayList<>();
 
-        ListView mNewsListView = (ListView) findViewById(R.id.news_list);
+        mNewsListView = (ListView) findViewById(R.id.news_list);
         // Set up the adapter for the ListView
         mNewsAdapter = new NewsAdapter(NewsActivity.this, newsResult);
         mNewsListView.setAdapter(mNewsAdapter);
@@ -67,7 +72,21 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
     // Create an instance of a Loader if there is no previous one
     @Override
     public Loader<List<News>> onCreateLoader(int id, Bundle args) {
-        return new NewsLoader(this, GUARDIAN_URL);
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String orderBy = sharedPrefs.getString(
+                getString(R.string.settings_order_by_key),
+                getString(R.string.settings_order_by_default)
+        );
+
+        Uri baseUri = Uri.parse(GUARDIAN_URL);
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+
+        uriBuilder.appendQueryParameter("order-by", orderBy);
+
+        Log.v(LOG_TAG, "Result url: " + uriBuilder.toString());
+
+        return new NewsLoader(this, uriBuilder.toString());
     }
 
     // Populate UI with the data obtained from HTTP query
@@ -97,5 +116,22 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         // Get details on the currently active default data network
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isConnected();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

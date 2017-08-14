@@ -158,31 +158,32 @@ public class QueryUtils {
                     datePublished = "";
                 }
 
+                String headline = "N/A";
+                String author = "N/A";
+                String body = "N/A";
+
 
                 if (currentNews.has("fields")) {
                     JSONObject currentNewsFields = currentNews.getJSONObject("fields");
 
                     // Extract the value for the key called "headline"
-                    String headline = "N/A";
                     if (currentNewsFields.has("headline")) {
                         headline = currentNewsFields.getString("headline");
                     }
 
                     // Extract the value for the key called "byline"
-                    String author = "N/A";
                     if (currentNewsFields.has("byline")) {
                         author = currentNewsFields.getString("byline");
                     }
 
                     // Extract the value for the key called "body"
-                    String body = "N/A";
                     if (currentNewsFields.has("trailText")) {
                         body = currentNewsFields.getString("trailText");
                     }
-
-                    News news = new News(headline, body, author, section, datePublished, url);
-                    newsList.add(news);
                 }
+
+                News news = new News(headline, body, author, section, datePublished, url);
+                newsList.add(news);
             }
         } catch (JSONException e) {
             Log.e(Log_TAG, "Problem while extracting JSON results");
