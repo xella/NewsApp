@@ -6,13 +6,15 @@ public class News {
     private String mBody;
     private String mAuthor;
     private String mSection;
+    private String mDate;
     private String mUrl;
 
-    public News(String headline, String body, String author, String section, String url) {
+    public News(String headline, String body, String author, String section, String date, String url) {
         mHeadline = headline;
         mBody = body;
         mAuthor = author;
         mSection = section;
+        mDate = date;
         mUrl = url;
     }
 
@@ -30,6 +32,10 @@ public class News {
 
     public String getSection() {
         return mSection;
+    }
+
+    public String getDate() {
+        return mDate;
     }
 
     public String getUrl() {

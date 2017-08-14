@@ -15,12 +15,19 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class QueryUtils {
 
     private static final String Log_TAG = QueryUtils.class.getSimpleName();
+
+    private static final int READ_TIMEOUT = 10000; /* milliseconds */
+
+    private static final int CONNECT_TIMEOUT = 20000;
 
     private QueryUtils() {
     }
@@ -62,8 +69,8 @@ public class QueryUtils {
         InputStream inputStream = null;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setReadTimeout((10000));
-            urlConnection.setConnectTimeout(20000);
+            urlConnection.setReadTimeout(READ_TIMEOUT);
+            urlConnection.setConnectTimeout(CONNECT_TIMEOUT);
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
@@ -134,6 +141,24 @@ public class QueryUtils {
                     Log.v(Log_TAG, "url: " + url);
                 }
 
+                // Extract the value for the key called "webPublicationDate"
+                String dateUnformatted;
+                String datePublished;
+                if (currentNews.has("webPublicationDate")) {
+                    dateUnformatted = currentNews.getString("webPublicationDate");
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                    try {
+                        Date date = format.parse(dateUnformatted);
+                        datePublished = (String) android.text.format.DateFormat.format("dd" + " " + "MMM"+ " " + "yyyy" + ", " + "HH:mm", date);
+                    } catch (ParseException e) {
+                        Log.e(Log_TAG, "An exception was encountered while trying to parse a date. " + e);
+                        datePublished = "";
+                    }
+                } else {
+                    datePublished = "";
+                }
+
+
                 if (currentNews.has("fields")) {
                     JSONObject currentNewsFields = currentNews.getJSONObject("fields");
 
@@ -155,7 +180,7 @@ public class QueryUtils {
                         body = currentNewsFields.getString("trailText");
                     }
 
-                    News news = new News(headline, body, author, section, url);
+                    News news = new News(headline, body, author, section, datePublished, url);
                     newsList.add(news);
                 }
             }

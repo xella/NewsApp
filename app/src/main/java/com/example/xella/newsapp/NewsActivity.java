@@ -64,11 +64,13 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         });
     }
 
+    // Create an instance of a Loader if there is no previous one
     @Override
     public Loader<List<News>> onCreateLoader(int id, Bundle args) {
         return new NewsLoader(this, GUARDIAN_URL);
     }
 
+    // Populate UI with the data obtained from HTTP query
     @Override
     public void onLoadFinished(Loader<List<News>> loader, List<News> newsList) {
         mNewsAdapter.clear();
@@ -78,12 +80,17 @@ public class NewsActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
+    // Clear data on reset
     @Override
     public void onLoaderReset(Loader<List<News>> loader) {
         // Loader reset, so we can clear out our existing data.
         mNewsAdapter.clear();
     }
 
+    /**
+     * Method that checks whether there is a network connection
+     * @return boolean that is true if there is a network connection
+     */
     private boolean isConnected() {
         // Get a reference to the ConnectivityManager to check state of network connectivity
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

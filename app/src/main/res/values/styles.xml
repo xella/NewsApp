@@ -9,11 +9,10 @@
     </style>
 
     <style name="NewsTitle">
-        <item name="android:padding">16dp</item>
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">24sp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:background">@color/colorPrimary</item>
     </style>
 
     <style name="NewsBody">
@@ -31,5 +30,6 @@
         <item name="android:padding">8dp</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textStyle">italic</item>
+        <item name="android:textAlignment">viewEnd</item>
     </style>
 </resources>
